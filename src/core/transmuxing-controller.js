@@ -269,6 +269,7 @@ class TransmuxingController {
             this._demuxer.onMediaInfo = this._onMediaInfo.bind(this);
             this._demuxer.onMetaDataArrived = this._onMetaDataArrived.bind(this);
             this._demuxer.onScriptDataArrived = this._onScriptDataArrived.bind(this);
+            this._demuxer.onVideoResolutionChanged = this._onVideoResolutionChanged.bind(this);
 
             // read: 这里让 demuxer 接管 io 的 onDataArrival 回调，后续 io 获取的数据全部由 demuxer 进行处理
             // read: demuxer 处理的数据再交给 remuxer 处理
@@ -435,6 +436,7 @@ class TransmuxingController {
         info.loaderType = this._ioctl.loaderType;
         info.currentSegmentIndex = this._currentSegmentIndex;
         info.totalSegmentCount = this._mediaDataSource.segments.length;
+        info.bps_audio = info.bps_video = 0;
 
         let driftRecordString = '';
         if (this._remuxer) {
@@ -446,7 +448,16 @@ class TransmuxingController {
 
         info.driftRecord = driftRecordString;
 
+        if (this._demuxer && this._demuxer._bpsInfo) {
+            info.bps_video = this._demuxer._bpsInfo.bps_video;
+            info.bps_audio = this._demuxer._bpsInfo.bps_audio;
+        }
+
         this._emitter.emit(TransmuxingEvents.STATISTICS_INFO, info);
+    }
+
+    _onVideoResolutionChanged(video_info) {
+        this._emitter.emit(TransmuxingEvents.VIDEO_RESOLUTION_CHANGED, video_info);
     }
 
 }
