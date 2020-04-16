@@ -436,7 +436,7 @@ class TransmuxingController {
         info.currentSegmentIndex = this._currentSegmentIndex;
         info.totalSegmentCount = this._mediaDataSource.segments.length;
 
-        let driftRecordString = ''
+        let driftRecordString = '';
         if (this._remuxer) {
             const driftRecord = this._remuxer.getDriftRecord();
             if (driftRecord.length) {
