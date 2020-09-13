@@ -1333,7 +1333,7 @@ class FLVDemuxer {
             this._onMediaInfo(mi);
         }
 
-        isLandscapeView = config.codecWidth >= config.codecHeight ? true : false;
+        isLandscapeView = meta.codecWidth >= meta.codecHeight ? true : false;
 
         meta.isAv1 = true;
         meta.av1C = new Uint8Array(dataSize);
