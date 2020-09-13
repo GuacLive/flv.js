@@ -1264,7 +1264,7 @@ class FLVDemuxer {
             + meta.codecWidth + 'x' + meta.codecHeight + '@' + meta.frameRate.fps + ' fps, '
             + 'profile=' + meta.profile + ', level=' + meta.level);
 
-        this._doHandleTrackMetadata(meta);
+        this._doHandleTrackMetadata(meta, isLandscapeView);
     }
 
     _parseAV1CodecConfigurationRecord(arrayBuffer, dataOffset, dataSize) {
@@ -1275,6 +1275,7 @@ class FLVDemuxer {
 
         let meta = this._videoMetadata;
         const track = this._videoTrack;
+        let isLandscapeView = true;
 
         if (!meta) {
             if (this._hasVideo === false && this._hasVideoFlagOverrided === false) {
@@ -1332,15 +1333,17 @@ class FLVDemuxer {
             this._onMediaInfo(mi);
         }
 
+        isLandscapeView = config.codecWidth >= config.codecHeight ? true : false;
+
         meta.isAv1 = true;
         meta.av1C = new Uint8Array(dataSize);
         meta.av1C.set(new Uint8Array(arrayBuffer, dataOffset, dataSize), 0);
         Log.v(this.TAG, 'Parsed AV1CodecConfigurationRecord');
 
-        this._doHandleTrackMetadata(meta);
+        this._doHandleTrackMetadata(meta, isLandscapeView);
     }
 
-    _doHandleTrackMetadata(meta) {
+    _doHandleTrackMetadata(meta, isLandscapeView) {
         if (this._isInitialMetadataDispatched()) {
             // flush parsed frames
             if (this._dispatch && (this._audioTrack.length || this._videoTrack.length)) {
